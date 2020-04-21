@@ -115,7 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mode
         String mode ="mode=driving";
         //API
-        String api_key ="key=AIzaSyDbPzinnD33A6nCLuHzo2SQoCsyAl6unMI";
+        String api_key ="key=KEY";
         //result
         String result = str_from + "&" + str_to + "&" + sensor + "&"+ mode+"&"+api_key;
         //output format
