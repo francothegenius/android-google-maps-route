@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -74,6 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String url = getRequestUrl(points.get(0), points.get(1));
         TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
         taskRequestDirections.execute(url);
+        
 
         //button
         btnNewDirection = findViewById(R.id.btnNewDirection);
@@ -102,6 +104,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //adding markers from location gotten from main acrivity
         googleMap.addMarker(originM);
         googleMap.addMarker(destinationM);
+        //moving camera
+        moveToCurrentLocation(originM.getPosition());
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
@@ -280,4 +284,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
              }
          }
      }
+
+    private void moveToCurrentLocation(LatLng currentLocation)
+    {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,15));
+        // Zoom in, animating the camera.
+        mMap.animateCamera(CameraUpdateFactory.zoomIn());
+        // Zoom out to zoom level 10, animating with a duration of 2 seconds.
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+
+    }
 }
