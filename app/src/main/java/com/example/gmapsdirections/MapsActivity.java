@@ -6,11 +6,14 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -39,9 +42,11 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    MarkerOptions originM, destinationM;
+    Button btnNewDirection;
+
     private static final int LOCATION_REQUEST = 500;
     ArrayList<LatLng> points;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +56,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         points = new ArrayList<>();
+        //getting location from main activity
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        LatLng origin = new LatLng(Double.parseDouble(bundle.getString("lat1")),
+                Double.parseDouble(bundle.getString("long1")));
+        LatLng destination = new LatLng(Double.parseDouble(bundle.getString("lat2")),
+                Double.parseDouble(bundle.getString("long2")));
+        points.add(origin);
+        points.add(destination);
+
+        originM = new MarkerOptions().position(origin);
+        originM.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+        destinationM = new MarkerOptions().position(destination);
+        destinationM.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+        String url = getRequestUrl(points.get(0), points.get(1));
+        TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+        taskRequestDirections.execute(url);
+
+        //button
+        btnNewDirection = findViewById(R.id.btnNewDirection);
+        btnNewDirection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent changeActivity = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(changeActivity);
+            }
+        });
     }
 
 
@@ -66,6 +99,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        //adding markers from location gotten from main acrivity
+        googleMap.addMarker(originM);
+        googleMap.addMarker(destinationM);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
@@ -115,7 +151,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mode
         String mode ="mode=driving";
         //API
-        String api_key ="key=KEY";
+        String api_key ="key=KEY GOES HERE";
         //result
         String result = str_from + "&" + str_to + "&" + sensor + "&"+ mode+"&"+api_key;
         //output format
