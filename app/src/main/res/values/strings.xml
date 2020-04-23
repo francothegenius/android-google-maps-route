@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">GMapsDirections</string>
     <string name="title_activity_maps">Map</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+    <string name="lat">Lat:</string>
+    <string name="lon">Long:</string>
+    <string name="enter">Enter Coordinates</string>
 </resources>
